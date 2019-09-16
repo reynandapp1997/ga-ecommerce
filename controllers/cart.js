@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token);
 
 const Cart = require('../models/cart');
 const {
@@ -15,6 +19,9 @@ exports.getUserCart = (req, res, next) => {
         .then(result => res.status(200).json(successResponse('Success get cart', result.length, result)))
         .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -32,6 +39,9 @@ exports.addUserCart = (req, res, next) => {
         .then(result => res.status(201).json(successResponse('Success add to cart')))
         .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -43,6 +53,9 @@ exports.deleteUserCart = (req, res, next) => {
         (err) => {
             /* istanbul ignore if */
             if (err) {
+                if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                    bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${err.toString()}`);
+                }
                 return res.status(500).json(errorResponse(err.toString()));
             }
             return res.status(200).json(successResponse('Success delete cart'))

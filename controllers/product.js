@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token);
 
 const Product = require('../models/product');
 const Cart = require('../models/cart');
@@ -15,6 +19,9 @@ exports.getAllProduct = (req, res, next) => {
         .then(result => res.status(200).json(successResponse('GET Product Success', result.length, result)))
         .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -29,6 +36,9 @@ exports.getProductDetail = (req, res, next) => {
         })
         .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -56,6 +66,9 @@ exports.addProduct = (req, res, next) => {
         .then(result => res.status(201).json(successResponse('Success add product')))
         .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -81,6 +94,9 @@ exports.updateProduct = (req, res, next) => {
         newProduct, (err, raw) => {
             /* istanbul ignore if */
             if (err) {
+                if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                    bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${err.toString()}`);
+                }
                 return res.status(500).json(errorResponse(err.toString()));
             } else if (raw) {
                 return res.status(200).json(successResponse('Success update product'))
@@ -95,6 +111,9 @@ exports.deleteProduct = (req, res, next) => {
         async (err) => {
             /* istanbul ignore if */
             if (err) {
+                if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                    bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${err.toString()}`);
+                }
                 return res.status(500).json(errorResponse(err.toString()));
             }
             await Cart.deleteMany({ productId: mongoose.mongo.ObjectId(id) });

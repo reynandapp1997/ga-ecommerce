@@ -6,6 +6,9 @@ const logger = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
+const TelegramBot = require('node-telegram-bot-api');
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token);
 
 const {
   MONGODB_URI
@@ -45,7 +48,8 @@ mongoose.connect(MONGODB_URI, {
   /* istanbul ignore if */
   if (err) {
     return console.log(err);
-  } else if (process.env.ENVIRONMENT !== 'TESTING') {
+  } else if (process.env.ENVIRONMENT === 'PRODUCTION') {
+    bot.sendMessage(process.env.CHAT_ID, 'MongoDB Connected');
     console.log('MongoDB Connected');
   }
 });

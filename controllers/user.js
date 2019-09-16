@@ -1,5 +1,9 @@
 const bcrypjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token);
 
 const User = require('../models/user');
 const {
@@ -19,7 +23,10 @@ exports.getAllUser = (req, res, next) => {
         })
         .catch(error => {
             /* istanbul ignore next */
-            return res.status(500).json(errorResponse(error));
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
+            return res.status(500).json(errorResponse(error.toString()));
         });
 };
 
@@ -44,7 +51,10 @@ exports.createUser = (req, res, next) => {
                 return res.status(201).json(successResponse('User created'))
             })
             .catch(error => {
-                return res.status(500).json(errorResponse(error));
+                if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                    bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+                }
+                return res.status(500).json(errorResponse(error.toString()));
             });
     });
 };
@@ -61,6 +71,9 @@ exports.loginUser = async (req, res, next) => {
     bcrypjs.compare(password, user.password, (error, success) => {
         /* istanbul ignore if */
         if (error) {
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+            }
             return res.status(500).json(errorResponse(error));
         } else if (success) {
             const token = jwt.sign({
@@ -99,12 +112,18 @@ exports.changePassword = (req, res, next) => {
         bcrypjs.hash(password, 10, (error, hash) => {
             /* istanbul ignore if */
             if (error) {
+                if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                    bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
+                }
                 return res.status(500).json(errorResponse('Failed hashing password'));
             } else if (hash) {
                 User.findOneAndUpdate({ _id: decoded.id, email: decoded.email }, { $set: { password: hash } }, (err, doc) => {
                     /* istanbul ignore if */
                     if (err) {
-                        return res.status(500).json(errorResponse('Failed hashing password'));
+                        if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                            bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${err.toString()}`);
+                        }
+                        return res.status(500).json(errorResponse('Failed update password'));
                     } else if (doc) {
                         return res.status(200).json(successResponse('Success reset password'));
                     }

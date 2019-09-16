@@ -6,6 +6,10 @@ const transport = nodemailer.createTransport(
     })
 );
 const jwt = require('jsonwebtoken');
+const TelegramBot = require('node-telegram-bot-api');
+
+const token = process.env.TELEGRAM_TOKEN;
+const bot = new TelegramBot(token);
 
 const User = require('../models/user');
 const {
@@ -32,8 +36,11 @@ exports.sendResetPassword = async (email, res) => {
         <a href="https://ga-todolist-api.herokuapp.com/api/user/reset/${token}" target="_blank">Reset Password</a>`
     })
         .then(() => res.status(200).json(successResponse(`Email sent to ${email}`, 0, { token })))
-        .catch(() => {
+        .catch(error => {
             /* istanbul ignore next */
+            if (process.env.ENVIRONMENT === 'PRODUCTION') {
+                bot.sendMessage(process.env.CHAT_ID, error.toString());
+            }
             return res.status(500).json(errorResponse(`Failed sent to ${email}`))
         });
 };
