@@ -55,7 +55,7 @@ exports.loginUser = async (req, res, next) => {
     } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(404).json(errorResponse('User not registered'));
+        return res.status(404).json(errorResponse('Invalid credential'));
     }
     bcrypjs.compare(password, user.password, (error, success) => {
         if (error) {
@@ -80,7 +80,7 @@ exports.loginUser = async (req, res, next) => {
                 token: `Bearer ${token}`
             });
         }
-        return res.status(401).json(errorResponse('Wrong password'));
+        return res.status(401).json(errorResponse('Invalid credential'));
     })
 };
 
