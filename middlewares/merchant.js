@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
     try {
-        if (req.user.level !== 'Merchant') {
+        if (req.user.role !== 'Merchant') {
             return res.status(401).json({
                 message: 'You are not authorized'
             });
