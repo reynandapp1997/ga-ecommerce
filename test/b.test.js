@@ -6,10 +6,12 @@ chai.use(chaiHttp);
 const expect = chai.expect;
 
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 
 var merchantToken;
 var customerToken;
 var productId;
+var cartId;
 
 describe('LOGIN', () => {
     it('LOGIN MERCHANT', done => {
@@ -43,7 +45,9 @@ describe('LOGIN', () => {
 describe('MERCHANT ADD, UPDATE, DELETE PRODUCT', () => {
     before(done => {
         Product.deleteMany({}, err => {
-            done();
+            Cart.deleteMany({}, err => {
+                done();
+            });
         });
     });
 
@@ -170,6 +174,41 @@ describe('MERCHANT ADD, UPDATE, DELETE PRODUCT', () => {
                 expect(res.status).eql(200);
                 expect(res.body.data.metrics.seen).eql(2);
                 expect(res.body.data.name).eql('New Samsung Galaxy A50');
+                done();
+            });
+    });
+
+    it('ADD PRODUCT TO CUSTOMER CART', done => {
+        chai.request(server)
+            .post('/api/cart')
+            .send({
+                productId
+            })
+            .set('Authorization', customerToken)
+            .end((err, res) => {
+                expect(res.status).eql(201);
+                done();
+            });
+    });
+
+    it('GET CUSTOMER CART', done => {
+        chai.request(server)
+            .get('/api/cart')
+            .set('Authorization', customerToken)
+            .end((err, res) => {
+                expect(res.status).eql(200);
+                expect(res.body.length).eql(1);
+                cartId = res.body.data[0]._id;
+                done();
+            });
+    });
+
+    it('DELETE CUSTOMER CART', done => {
+        chai.request(server)
+            .delete(`/api/cart/${cartId}`)
+            .set('Authorization', customerToken)
+            .end((err, res) => {
+                expect(res.status).eql(200);
                 done();
             });
     });
