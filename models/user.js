@@ -20,7 +20,7 @@ const user = mongoose.Schema({
         required: true,
         enum: ['Male', 'Female']
     },
-    level: {
+    role: {
         type: String,
         required: true,
         enum: ['Customer', 'Merchant']

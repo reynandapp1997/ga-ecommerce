@@ -28,7 +28,7 @@ exports.createUser = (req, res, next) => {
         email,
         password,
         gender,
-        level
+        role
     } = req.body;
     bcrypjs.hash(password, 10, async (err, hash) => {
         const newUser = new User({
@@ -36,7 +36,7 @@ exports.createUser = (req, res, next) => {
             email,
             password: hash,
             gender,
-            level
+            role
         });
         newUser.save()
             .then(result => {
@@ -66,7 +66,7 @@ exports.loginUser = async (req, res, next) => {
                 name: user.name,
                 email: user.email,
                 gender: user.gender,
-                level: user.level
+                role: user.role
             }, process.env.JWT_SECRET_KEY, {
             });
             res.setHeader('Authorization', `Bearer ${token}`);
@@ -76,7 +76,7 @@ exports.loginUser = async (req, res, next) => {
                 name: user.name,
                 email: user.email,
                 gender: user.gender,
-                level: user.level,
+                role: user.role,
                 token: `Bearer ${token}`
             });
         }

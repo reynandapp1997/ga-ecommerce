@@ -25,7 +25,7 @@ describe('USER', () => {
                     email: 'reynandapp1997@gmail.com',
                     password: 'gegewepe',
                     gender: 'Male',
-                    level: 'Customer'
+                    role: 'Customer'
                 })
                 .end((err, res) => {
                     expect(res.status).eql(201);
@@ -40,7 +40,7 @@ describe('USER', () => {
                     email: 'reynandapp1997@yahoo.com',
                     password: 'gegewepe',
                     gender: 'Female',
-                    level: 'Merchant'
+                    role: 'Merchant'
                 })
                 .end((err, res) => {
                     expect(res.status).eql(201);
@@ -55,7 +55,7 @@ describe('USER', () => {
                     email: 'reynandapp1997@gmail.com',
                     password: 'gegewepe',
                     gender: 'Male',
-                    level: 'Customer'
+                    role: 'Customer'
                 })
                 .end((err, res) => {
                     expect(res.status).eql(500);
