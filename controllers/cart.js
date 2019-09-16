@@ -13,7 +13,10 @@ exports.getUserCart = (req, res, next) => {
         .populate('userId', '-__v -password')
         .exec()
         .then(result => res.status(200).json(successResponse('Success get cart', result.length, result)))
-        .catch(error => res.status(500).json(errorResponse(error.toString())));
+        .catch(error => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(error.toString()));
+        });
 };
 
 exports.addUserCart = (req, res, next) => {
@@ -27,7 +30,10 @@ exports.addUserCart = (req, res, next) => {
     });
     newCart.save()
         .then(result => res.status(201).json(successResponse('Success add to cart')))
-        .catch(error => res.status(500).json(errorResponse(error.toString())));
+        .catch(error => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(error.toString()));
+        });
 };
 
 exports.deleteUserCart = (req, res, next) => {
@@ -35,6 +41,7 @@ exports.deleteUserCart = (req, res, next) => {
     const id = req.params.id;
     Cart.deleteOne({ _id: mongoose.mongo.ObjectId(id), userId: mongoose.mongo.ObjectId(userId) },
         (err) => {
+            /* istanbul ignore if */
             if (err) {
                 return res.status(500).json(errorResponse(err.toString()));
             }

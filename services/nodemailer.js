@@ -22,8 +22,8 @@ exports.sendResetPassword = async (email, res) => {
         id: userExist._id,
         email: userExist.email
     }, process.env.JWT_SECRET_KEY, {
-            expiresIn: '1h'
-        });
+        expiresIn: '1h'
+    });
     transport.sendMail({
         from: 'group_one@ga.com',
         to: email,
@@ -32,5 +32,8 @@ exports.sendResetPassword = async (email, res) => {
         <a href="https://ga-todolist-api.herokuapp.com/api/user/reset/${token}" target="_blank">Reset Password</a>`
     })
         .then(() => res.status(200).json(successResponse(`Email sent to ${email}`, 0, { token })))
-        .catch(() => res.status(500).json(errorResponse(`Failed sent to ${email}`)));
+        .catch(() => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(`Failed sent to ${email}`))
+        });
 };

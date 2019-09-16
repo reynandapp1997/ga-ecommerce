@@ -18,6 +18,7 @@ exports.getAllUser = (req, res, next) => {
             return res.status(200).json(successResponse('success', result.length, result));
         })
         .catch(error => {
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error));
         });
 };
@@ -58,6 +59,7 @@ exports.loginUser = async (req, res, next) => {
         return res.status(404).json(errorResponse('Invalid credential'));
     }
     bcrypjs.compare(password, user.password, (error, success) => {
+        /* istanbul ignore if */
         if (error) {
             return res.status(500).json(errorResponse(error));
         } else if (success) {
@@ -95,10 +97,12 @@ exports.changePassword = (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         const password = req.body.password;
         bcrypjs.hash(password, 10, (error, hash) => {
+            /* istanbul ignore if */
             if (error) {
                 return res.status(500).json(errorResponse('Failed hashing password'));
             } else if (hash) {
                 User.findOneAndUpdate({ _id: decoded.id, email: decoded.email }, { $set: { password: hash } }, (err, doc) => {
+                    /* istanbul ignore if */
                     if (err) {
                         return res.status(500).json(errorResponse('Failed hashing password'));
                     } else if (doc) {
@@ -108,6 +112,7 @@ exports.changePassword = (req, res, next) => {
             }
         });
     } catch (error) {
+        /* istanbul ignore next */
         return res.status(401).json({
             message: 'You are not authorized'
         });

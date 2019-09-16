@@ -13,7 +13,10 @@ exports.getAllProduct = (req, res, next) => {
         .populate('userId', '-__v -password')
         .exec()
         .then(result => res.status(200).json(successResponse('GET Product Success', result.length, result)))
-        .catch(error => res.status(500).json(errorResponse(error.toString())));
+        .catch(error => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(error.toString()));
+        });
 };
 
 exports.getProductDetail = (req, res, next) => {
@@ -24,7 +27,10 @@ exports.getProductDetail = (req, res, next) => {
             await Product.findByIdAndUpdate({ _id: id }, { $inc: { 'metrics.seen': 1 } });
             return res.status(200).json(successResponse('GET Product Detail Success', null, result))
         })
-        .catch(error => res.status(500).json(errorResponse(error.toString())));
+        .catch(error => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(error.toString()));
+        });
 };
 
 exports.addProduct = (req, res, next) => {
@@ -48,7 +54,10 @@ exports.addProduct = (req, res, next) => {
     });
     newProduct.save()
         .then(result => res.status(201).json(successResponse('Success add product')))
-        .catch(error => res.status(500).json(errorResponse(error.toString())));
+        .catch(error => {
+            /* istanbul ignore next */
+            return res.status(500).json(errorResponse(error.toString()));
+        });
 };
 
 exports.updateProduct = (req, res, next) => {
@@ -70,6 +79,7 @@ exports.updateProduct = (req, res, next) => {
     });
     Product.updateOne({ _id: mongoose.mongo.ObjectId(id), userId: mongoose.mongo.ObjectId(userId) },
         newProduct, (err, raw) => {
+            /* istanbul ignore if */
             if (err) {
                 return res.status(500).json(errorResponse(err.toString()));
             } else if (raw) {
@@ -83,6 +93,7 @@ exports.deleteProduct = (req, res, next) => {
     const userId = req.user.id;
     Product.deleteOne({ _id: mongoose.mongo.ObjectId(id), userId: mongoose.mongo.ObjectId(userId) },
         async (err) => {
+            /* istanbul ignore if */
             if (err) {
                 return res.status(500).json(errorResponse(err.toString()));
             }

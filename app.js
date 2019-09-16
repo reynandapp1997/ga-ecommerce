@@ -19,6 +19,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
 app.use(cors());
+/* istanbul ignore if */
 if (process.env.ENVIRONMENT !== 'DEVELOPMENT' && process.env.ENVIRONMENT !== 'TESTING') {
   app.use(logger('dev'));
 }
@@ -28,7 +29,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', indexRouter);
-
+/* istanbul ignore next */
 app.use((req, res, next) => {
   return res.status(404).json({
     message: 'Endpoint not found'
@@ -41,6 +42,7 @@ mongoose.connect(MONGODB_URI, {
   useCreateIndex: true,
   useUnifiedTopology: true
 }, (err) => {
+  /* istanbul ignore if */
   if (err) {
     return console.log(err);
   } else if (process.env.ENVIRONMENT !== 'TESTING') {
