@@ -27,6 +27,7 @@ exports.createUser = (req, res, next) => {
         name,
         email,
         password,
+        gender,
         level
     } = req.body;
     bcrypjs.hash(password, 10, async (err, hash) => {
@@ -34,6 +35,7 @@ exports.createUser = (req, res, next) => {
             name,
             email,
             password: hash,
+            gender,
             level
         });
         newUser.save()
@@ -62,14 +64,19 @@ exports.loginUser = async (req, res, next) => {
             const token = jwt.sign({
                 id: user._id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                gender: user.gender,
+                level: user.level
             }, process.env.JWT_SECRET_KEY, {
-                });
+            });
             res.setHeader('Authorization', `Bearer ${token}`);
             return res.status(200).json({
                 message: 'Login Success',
+                id: user._id,
                 name: user.name,
                 email: user.email,
+                gender: user.gender,
+                level: user.level,
                 token: `Bearer ${token}`
             });
         }

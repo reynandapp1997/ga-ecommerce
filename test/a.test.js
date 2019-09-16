@@ -24,6 +24,7 @@ describe('USER', () => {
                     name: 'Reynanda Putra Pratama',
                     email: 'reynandapp1997@gmail.com',
                     password: 'gegewepe',
+                    gender: 'Male',
                     level: 'Customer'
                 })
                 .end((err, res) => {
@@ -38,6 +39,7 @@ describe('USER', () => {
                     name: 'reytama shop',
                     email: 'reynandapp1997@yahoo.com',
                     password: 'gegewepe',
+                    gender: 'Female',
                     level: 'Merchant'
                 })
                 .end((err, res) => {
@@ -52,6 +54,7 @@ describe('USER', () => {
                     name: 'Reynanda Putra Pratama',
                     email: 'reynandapp1997@gmail.com',
                     password: 'gegewepe',
+                    gender: 'Male',
                     level: 'Customer'
                 })
                 .end((err, res) => {
