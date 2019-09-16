@@ -16,8 +16,8 @@ describe('USER', () => {
         });
     });
 
-    describe('/POST', () => {
-        it('should add one user', done => {
+    describe('POST', () => {
+        it('ADD CUSTOMER USER', done => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -32,7 +32,7 @@ describe('USER', () => {
                     done();
                 });
         });
-        it('should add one user', done => {
+        it('ADD MERCHANT USER', done => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -47,7 +47,7 @@ describe('USER', () => {
                     done();
                 });
         });
-        it('should fail add one user with existed email', done => {
+        it('FAILED ADD USER WITH EXIST EMAIL', done => {
             chai.request(server)
                 .post('/api/user')
                 .send({
@@ -62,7 +62,7 @@ describe('USER', () => {
                     done();
                 });
         });
-        it('should login user', done => {
+        it('LOGIN CUSTOMER', done => {
             chai.request(server)
                 .post('/api/user/login')
                 .send({
@@ -74,7 +74,19 @@ describe('USER', () => {
                     done();
                 });
         });
-        it('should not login user with not exist email', done => {
+        it('LOGIN MERCHANT', done => {
+            chai.request(server)
+                .post('/api/user/login')
+                .send({
+                    email: 'reynandapp1997@yahoo.com',
+                    password: 'gegewepe'
+                })
+                .end((err, res) => {
+                    expect(res.status).eql(200);
+                    done();
+                });
+        });
+        it('FAILED LOGIN WITH INVALID CREDENTIALS', done => {
             chai.request(server)
                 .post('/api/user/login')
                 .send({
@@ -86,7 +98,7 @@ describe('USER', () => {
                     done();
                 });
         });
-        it('should not login user with wrong password', done => {
+        it('FAILED LOGIN WITH INVALID CREDENTIALS', done => {
             chai.request(server)
                 .post('/api/user/login')
                 .send({
@@ -100,8 +112,8 @@ describe('USER', () => {
         });
     });
 
-    describe('/GET', () => {
-        it('should get all user', done => {
+    describe('GET', () => {
+        it('GET ALL USER', done => {
             chai.request(server)
                 .get('/api/user')
                 .end((err, res) => {
@@ -112,8 +124,8 @@ describe('USER', () => {
         })
     });
 
-    describe('RESET Password', () => {
-        it('send link to email', done => {
+    describe('RESET PASSWORD', () => {
+        it('RESET CUSTOMER PASSWORD', done => {
             chai.request(server)
                 .post('/api/user/reset-password')
                 .send({
@@ -121,13 +133,37 @@ describe('USER', () => {
                 })
                 .end((err, res) => {
                     tokenResetPassword = res.body.data.token;
+                    expect(res.status).eql(200);
                     done();
                 });
         });
-        it('change the password', done => {
+        it('RESET CUSTOMER INVALID', done => {
+            chai.request(server)
+                .post('/api/user/reset-password')
+                .send({
+                    email: 'reynandapp1997@reytama.com'
+                })
+                .end((err, res) => {
+                    expect(res.status).eql(404);
+                    done();
+                });
+        });
+        it('RESET CUSTOMER PASSWORD', done => {
             chai.request(server)
                 .post(`/api/user/reset/${tokenResetPassword}`)
                 .send({
+                    password: 'GEGEWEPE'
+                })
+                .end((err, res) => {
+                    expect(res.status).eql(200);
+                    done();
+                });
+        });
+        it('LOGIN CUSTOMER', done => {
+            chai.request(server)
+                .post('/api/user/login')
+                .send({
+                    email: 'reynandapp1997@gmail.com',
                     password: 'GEGEWEPE'
                 })
                 .end((err, res) => {
