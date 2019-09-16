@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Product = require('../models/product');
+const Cart = require('../models/cart');
 const {
     successResponse,
     errorResponse
@@ -81,10 +82,11 @@ exports.deleteProduct = (req, res, next) => {
     const id = req.params.id;
     const userId = req.user.id;
     Product.deleteOne({ _id: mongoose.mongo.ObjectId(id), userId: mongoose.mongo.ObjectId(userId) },
-        (err) => {
+        async (err) => {
             if (err) {
                 return res.status(500).json(errorResponse(err.toString()));
             }
+            await Cart.deleteMany({ productId: mongoose.mongo.ObjectId(id) });
             return res.status(200).json(successResponse('Success delete product'))
         })
 };
