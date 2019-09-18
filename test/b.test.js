@@ -182,7 +182,22 @@ describe('MERCHANT ADD, UPDATE, DELETE PRODUCT', () => {
         chai.request(server)
             .post('/api/cart')
             .send({
-                productId
+                productId,
+                qty: 2
+            })
+            .set('Authorization', customerToken)
+            .end((err, res) => {
+                expect(res.status).eql(201);
+                done();
+            });
+    });
+
+    it('ADD PRODUCT TO CUSTOMER CART', done => {
+        chai.request(server)
+            .post('/api/cart')
+            .send({
+                productId,
+                qty: 3
             })
             .set('Authorization', customerToken)
             .end((err, res) => {
@@ -197,8 +212,8 @@ describe('MERCHANT ADD, UPDATE, DELETE PRODUCT', () => {
             .set('Authorization', customerToken)
             .end((err, res) => {
                 expect(res.status).eql(200);
-                expect(res.body.length).eql(1);
-                cartId = res.body.data[0]._id;
+                expect(res.body.length).eql(2);
+                cartId = res.body.data.carts[0]._id;
                 done();
             });
     });

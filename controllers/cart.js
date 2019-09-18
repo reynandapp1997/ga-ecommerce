@@ -16,7 +16,26 @@ exports.getUserCart = (req, res, next) => {
         .populate('productId')
         .populate('userId', '-__v -password')
         .exec()
-        .then(result => res.status(200).json(successResponse('Success get cart', result.length, result)))
+        .then(result => {
+            let totalCarts = 0;
+            const carts = result.map(el => {
+                const total = el.qty * el.productId.price;
+                totalCarts += total;
+                return {
+                    _id: el._id,
+                    userId: el.userId,
+                    productId: el.productId,
+                    qty: el.qty,
+                    total,
+                    createdAt: el.createdAt,
+                    updatedAt: el.updatedAt,
+                }
+            });
+            return res.status(200).json(successResponse('Success get carts', carts.length, {
+                carts,
+                totalCarts
+            }));
+        })
         .catch(error => {
             /* istanbul ignore next */
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
