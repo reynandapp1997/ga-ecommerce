@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const {
+  multerUploads
+} = require('../middlewares/cloudinaryUpload');
 
 const {
     getAllProduct,
@@ -13,7 +16,7 @@ const merchant = require('../middlewares/merchant');
 
 router.get('/', getAllProduct);
 router.get('/:id', getProductDetail);
-router.post('/', auth, merchant, addProduct);
+router.post('/', auth, merchant, multerUploads.array('images'), addProduct);
 router.put('/:id', auth, merchant, updateProduct);
 router.delete('/:id', auth, merchant, deleteProduct);
 

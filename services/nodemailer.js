@@ -41,6 +41,7 @@ exports.sendResetPassword = async (email, res) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, error.toString());
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(`Failed sent to ${email}`))
         });
 };

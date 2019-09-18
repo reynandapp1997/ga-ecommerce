@@ -26,6 +26,7 @@ exports.getAllUser = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -51,6 +52,7 @@ exports.createUser = (req, res, next) => {
                 return res.status(201).json(successResponse('User created'))
             })
             .catch(error => {
+                /* istanbul ignore next */
                 if (process.env.ENVIRONMENT === 'PRODUCTION') {
                     bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
                 }

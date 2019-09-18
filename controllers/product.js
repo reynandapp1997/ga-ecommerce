@@ -7,6 +7,12 @@ const bot = new TelegramBot(token);
 const Product = require('../models/product');
 const Cart = require('../models/cart');
 const {
+    uri
+} = require('../middlewares/cloudinaryUpload');
+const {
+    uploader
+} = require('../configs/cloudinaryConfig');
+const {
     successResponse,
     errorResponse
 } = require('../helpers/response');
@@ -22,6 +28,7 @@ exports.getAllProduct = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -39,11 +46,27 @@ exports.getProductDetail = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
 
-exports.addProduct = (req, res, next) => {
+exports.addProduct = async (req, res, next) => {
+    let images = [];
+    if (req.files) {
+        for (let index = 0; index < req.files.length; index++) {
+            let file = uri(req)[index];
+            let response;
+            try {
+                response = await uploader.upload(file);
+            } catch (error) {
+                response = {
+                    message: `Image ${req.files[index].originalname} not uploaded`
+                }
+            }
+            images.push(response);
+        }
+    }
     const userId = req.user.id;
     const {
         name,
@@ -60,7 +83,8 @@ exports.addProduct = (req, res, next) => {
         metrics: {
             seen: 0,
             orders: 0
-        }
+        },
+        productImages: images
     });
     newProduct.save()
         .then(result => res.status(201).json(successResponse('Success add product')))
@@ -69,11 +93,12 @@ exports.addProduct = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
 
-exports.updateProduct = (req, res, next) => {
+exports.updateProduct = async (req, res, next) => {
     const id = req.params.id;
     const userId = req.user.id;
     const {
@@ -82,13 +107,15 @@ exports.updateProduct = (req, res, next) => {
         price,
         qtyStock
     } = req.body;
+    const existProduct = await Product.findById(id);
     const newProduct = new Product({
         _id: id,
         name,
         description,
         price,
         qtyStock,
-        userId
+        userId,
+        productImages: existProduct.productImages
     });
     Product.updateOne({ _id: mongoose.mongo.ObjectId(id), userId: mongoose.mongo.ObjectId(userId) },
         newProduct, (err, raw) => {

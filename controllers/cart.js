@@ -22,6 +22,7 @@ exports.getUserCart = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };
@@ -29,11 +30,13 @@ exports.getUserCart = (req, res, next) => {
 exports.addUserCart = (req, res, next) => {
     const userId = req.user.id;
     const {
-        productId
+        productId,
+        qty
     } = req.body;
     const newCart = new Cart({
         userId,
-        productId
+        productId,
+        qty
     });
     newCart.save()
         .then(result => res.status(201).json(successResponse('Success add to cart')))
@@ -42,6 +45,7 @@ exports.addUserCart = (req, res, next) => {
             if (process.env.ENVIRONMENT === 'PRODUCTION') {
                 bot.sendMessage(process.env.CHAT_ID, `${req.method}, ${req.originalUrl}\n${error.toString()}`);
             }
+            /* istanbul ignore next */
             return res.status(500).json(errorResponse(error.toString()));
         });
 };

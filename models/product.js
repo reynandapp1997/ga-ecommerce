@@ -29,7 +29,10 @@ const product = mongoose.Schema({
         orders: {
             type: Number,
         }
-    }
+    },
+    productImages: [{
+        type: Object
+    }]
 }, {
     timestamps: true
 });

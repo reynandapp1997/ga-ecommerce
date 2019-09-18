@@ -14,6 +14,9 @@ const {
   MONGODB_URI
 } = require('./environment');
 const indexRouter = require('./routes/index');
+const {
+  cloudinaryConfig
+} = require('./configs/cloudinaryConfig');
 
 const app = express();
 
@@ -21,6 +24,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+app.use('*', cloudinaryConfig);
 app.use(cors());
 /* istanbul ignore if */
 if (process.env.ENVIRONMENT !== 'DEVELOPMENT' && process.env.ENVIRONMENT !== 'TESTING') {
