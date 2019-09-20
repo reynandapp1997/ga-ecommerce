@@ -18,9 +18,15 @@ const {
 } = require('../helpers/response');
 
 exports.getAllProduct = (req, res, next) => {
-    var query;
+    const {
+        page
+    } = req.query;
+    let query;
+    let skip = page * 10 - 10;
     Product.find(query)
         .populate('userId', '-__v -password')
+        .skip(skip)
+        .limit(10)
         .exec()
         .then(result => res.status(200).json(successResponse('GET Product Success', result.length, result)))
         .catch(error => {
